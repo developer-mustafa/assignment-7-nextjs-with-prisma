@@ -1,0 +1,12 @@
+{
+  "translation": {
+    "todoApp": "Todo List App",
+    "addTask": "Add Task",
+    "typeHere": "Type here...",
+    "taskAdded": "Task Added!",
+    "edit": "Edit",
+    "delete": "Delete",
+    "task": "Task",
+    "completed": "Completed"
+  }
+}

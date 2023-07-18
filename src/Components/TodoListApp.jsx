@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Transition } from "@headlessui/react";
-import { HiPencilAlt, HiTrash } from "react-icons/hi";
+import { HiPencilAlt, HiTrash, HiCheck, HiX } from "react-icons/hi";
+import { BsCircleFill } from "react-icons/bs";
 
 function TodoListApp() {
   const [tasks, setTasks] = useState([]);
@@ -8,6 +8,7 @@ function TodoListApp() {
   const [showNotification, setShowNotification] = useState(false);
   const [editingTaskIndex, setEditingTaskIndex] = useState(null);
   const [editingTaskText, setEditingTaskText] = useState("");
+  const [isEnglish, setIsEnglish] = useState(true);
 
   useEffect(() => {
     const storedTasks = localStorage.getItem("tasks");
@@ -22,7 +23,11 @@ function TodoListApp() {
 
   const addTask = () => {
     if (newTask.trim() !== "") {
-      setTasks([...tasks, { text: newTask, editing: false }]);
+      const newTasks = [
+        ...tasks,
+        { text: newTask, editing: false, completed: false },
+      ];
+      setTasks(newTasks);
       setNewTask("");
       setShowNotification(true);
       setTimeout(() => {
@@ -37,9 +42,9 @@ function TodoListApp() {
     setTasks(updatedTasks);
   };
 
-  const startEditingTask = (index) => {
+  const startEditingTask = (index, text) => {
     setEditingTaskIndex(index);
-    setEditingTaskText(tasks[index].text);
+    setEditingTaskText(text);
   };
 
   const cancelEditingTask = () => {
@@ -47,10 +52,10 @@ function TodoListApp() {
     setEditingTaskText("");
   };
 
-  const updateTask = (index) => {
-    if (editingTaskText.trim() !== "") {
+  const updateTask = (index, text) => {
+    if (text.trim() !== "") {
       const updatedTasks = [...tasks];
-      updatedTasks[index].text = editingTaskText;
+      updatedTasks[index].text = text;
       updatedTasks[index].editing = false;
       setTasks(updatedTasks);
       setEditingTaskIndex(null);
@@ -58,19 +63,25 @@ function TodoListApp() {
     }
   };
 
-  const getRandomColor = () => {
-    const colors = [
-      "bg-gray-700"
-    ];
-    return colors[Math.floor(Math.random() * colors.length)];
+  const toggleTaskCompletion = (index) => {
+    const updatedTasks = [...tasks];
+    updatedTasks[index].completed = !updatedTasks[index].completed;
+    setTasks(updatedTasks);
+  };
+
+  const toggleLanguage = () => {
+    setIsEnglish(!isEnglish);
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
       <div className="container max-w-lg p-8 bg-gray-800 rounded shadow-lg">
-        <h1 className="text-3xl md:text-5xl mb-4 text-center text-amber-500">Todo List App</h1>
+        <h1 className="text-3xl md:text-5xl mb-4 text-center text-amber-500 font-bold">
+          {isEnglish ? "Todo List App" : "টুডো লিস্ট অ্যাপ"}
+        </h1>
         <div className="flex flex-col md:flex-row items-center justify-center w-full">
-          <textarea placeholder="type here..."
+          <textarea
+            placeholder={isEnglish ? "Type here..." : "এখানে লিখুন..."}
             className="border p-2 mb-4 bg-gray-800 flex-grow md:mr-2 rounded text-white text-2xl"
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
@@ -79,103 +90,105 @@ function TodoListApp() {
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded mt-4 md:mt-0 mb-3"
             onClick={addTask}
           >
-            Add Task
+            {isEnglish ? "Add Task" : "টাস্ক যুক্ত করুন"}
           </button>
         </div>
         <ul className="w-full">
           {tasks.map((task, index) => (
             <li
               key={index}
-              className={`flex items-center justify-between border-b-4 rounded p-4 t ${getRandomColor()} mb-2`}
+              className={`flex items-center justify-between border-b-2 rounded p-4 text-white text-2xl ${
+                task.completed ? "bg-gray-700" : "bg-gray-800"
+              } mb-2 hover:bg-gray-700 transition-colors duration-300`}
             >
               {editingTaskIndex === index ? (
-                <input
-                  className="border p-2 bg-gray-800 flex-grow mr-2 text-white"
-                  value={editingTaskText}
-                  onChange={(e) => setEditingTaskText(e.target.value)}
-                />
-              ) : (
-                <span className="text-2xl">{task.text}</span>
-              )}
-              <div className="flex items-center">
-                {editingTaskIndex === index ? (
-                  <>
+                <div className="flex-grow">
+                  <input
+                    className="border p-2 bg-gray-800 w-full rounded text-white text-lg focus:outline-none"
+                    value={editingTaskText}
+                    onChange={(e) => setEditingTaskText(e.target.value)}
+                  />
+                  <div className="flex items-center justify-end mt-2">
                     <button
                       className="text-green-500 hover:text-green-600 mr-2"
-                      onClick={() => updateTask(index)}
+                      onClick={() => updateTask(index, editingTaskText)}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-10 w-10"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      <HiCheck className="h-10  w-10" />
                     </button>
                     <button
                       className="text-red-500 hover:text-red-600"
                       onClick={cancelEditingTask}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-10 w-10"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                      <HiX className="h-10  w-10" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-grow">
+                  <span
+                    className={`text-xl md:text-2xl font-medium ${
+                      task.completed
+                        ? "line-through font-bold text-green-400"
+                        : ""
+                    }`}
+                  >
+                    {index + 1}. {task.text}
+                  </span>
+                  <div className="flex items-center justify-end mt-2">
+                    {task.completed ? (
+                      <button
+                        className="text-green-500 hover:text-green-600 mr-2"
+                        onClick={() => toggleTaskCompletion(index)}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </>
-                ) : (
-                  <>
+                        <HiCheck className="h-10  w-10" />
+                      </button>
+                    ) : (
+                      <button
+                        className="text-gray-300 hover:text-gray-400 mr-2"
+                        onClick={() => toggleTaskCompletion(index)}
+                      >
+                        <BsCircleFill className="h-10  w-10" />
+                      </button>
+                    )}
                     <button
-                      className="text-yellow-500 hover:text-yellow-600 mr-2"
-                      onClick={() => startEditingTask(index)}
+                      className="text-green-500 hover:text-green-600"
+                      onClick={() => startEditingTask(index, task.text)}
                     >
-                      <HiPencilAlt className="h-10 w-10" />
+                      <HiPencilAlt className="h-10  w-10" />
                     </button>
                     <button
-                      className="text-red-500 hover:text-red-600"
+                      className="text-red-500 hover:text-red-600 ml-2"
                       onClick={() => deleteTask(index)}
                     >
-                      <HiTrash className="h-10 w-10" />
+                      <HiTrash className="h-10  w-10" />
                     </button>
-                  </>
-                )}
-              </div>
+                  </div>
+                </div>
+              )}
             </li>
           ))}
         </ul>
         {showNotification && (
-          <Transition
-            show={showNotification}
-            enter="transition ease-out duration-500"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="transition ease-in duration-500"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            {(ref) => (
-              <div ref={ref} className="text-green-500 mt-4 text-center">
-                Task Added!
-              </div>
-            )}
-          </Transition>
+          <div className="text-green-500 mt-4 text-center">
+            {isEnglish ? "Task Added!" : "টাস্ক যুক্ত হয়েছে!"}
+          </div>
         )}
+      </div>
+      <div className="fixed bottom-4 right-4">
+        <button
+          className="text-white h-10 w-10 flex items-center justify-center rounded-full bg-gray-800"
+          onClick={toggleLanguage}
+        >
+          {isEnglish ? (
+            <span role="img" aria-label="Switch to Bengali">
+              🇧🇩
+            </span>
+          ) : (
+            <span role="img" aria-label="Switch to English">
+              🇺🇸
+            </span>
+          )}
+        </button>
       </div>
     </div>
   );
