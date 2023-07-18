@@ -59,22 +59,24 @@ function TodoListApp() {
   };
 
   const getRandomColor = () => {
-    const colors = ["bg-gray-700"];
+    const colors = [
+      "bg-gray-700"
+    ];
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
       <div className="container max-w-lg p-8 bg-gray-800 rounded shadow-lg">
-        <h1 className="text-3xl md:text-5xl mb-4 text-center">Todo List</h1>
+        <h1 className="text-3xl md:text-5xl mb-4 text-center text-amber-500">Todo List App</h1>
         <div className="flex flex-col md:flex-row items-center justify-center w-full">
-          <textarea
+          <textarea placeholder="type here..."
             className="border p-2 mb-4 bg-gray-800 flex-grow md:mr-2 rounded text-white text-2xl"
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
           />
           <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4 md:mt-0 mb-3"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded mt-4 md:mt-0 mb-3"
             onClick={addTask}
           >
             Add Task
